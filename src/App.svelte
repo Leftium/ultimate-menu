@@ -2,11 +2,39 @@
     import { onMount } from 'svelte'
     import { Temporal } from 'proposal-temporal'
 
-    laNowString = null
-    percent     = null
-    hoursPassed = null
-    hoursRemain = null
-    total       = 24
+    DECIMALS = 2
+
+    laNowString = ''
+    percent     = 0
+    passed      = 0
+    remain      = 0
+    total       = 100
+
+    passedInput = null
+    remainInput = null
+    totalInput  = null
+    fixedInput  = null
+
+
+    updateValues = (lastInput) ->
+        switch lastInput
+            when passedInput
+                totalInput.value = (100 * passedInput.value / percent)
+                remainInput.value = (totalInput.value - passedInput.value)
+            when remainInput
+                totalInput.value = (100 * remainInput.value / (100 - percent))
+                passedInput.value = (totalInput.value - remainInput.value)
+            when totalInput
+                passedInput.value = (totalInput.value * percent/100)
+                remainInput.value = (remain = totalInput.value - passedInput.value)
+
+        if lastInput isnt passedInput
+            passedInput.value = parseFloat(passedInput.value, 10).toFixed(DECIMALS)
+        if lastInput isnt remainInput
+            remainInput.value = parseFloat(remainInput.value, 10).toFixed(DECIMALS)
+        if lastInput isnt totalInput
+            totalInput.value = parseFloat(totalInput.value, 10).toFixed(DECIMALS)
+
 
     updateTime = () ->
         laNow = Temporal.now.zonedDateTimeISO('America/Los_Angeles')
@@ -29,13 +57,31 @@
         hoursPassed = duration.total { unit: 'hours' }
         hoursRemain = 24 - hoursPassed
         percent = hoursPassed/24*100
-    updateTime()
+
+        updateValues(fixedInput)
 
     onMount ->
+        fixedInput = totalInput
+        updateValues fixedInput
+
+        console.log fixedInput
+
+        updateTime()
         interval = setInterval updateTime, 1000
 
         # Clean up when destroyed.
         () -> clearInterval interval
+
+    handleFocus = (e) ->
+        e.srcElement.select()
+        fixedInput = e.srcElement
+
+
+    handleInput = (e) ->
+        v = parseFloat (@value or 0), 10
+        updateValues e.srcElement
+
+
 
 </script>
 
@@ -43,13 +89,26 @@
 main
     h2 LA time: {laNowString}
     span
-        input(value='{ percent.toFixed(1) }')
+        input(on:input='{handleInput}'
+              value='{ percent.toFixed(DECIMALS) }')
     span
-        input(value='{ hoursPassed.toFixed(1) }')
+        input(bind:this='{passedInput}'
+              class:selected='{fixedInput === passedInput}'
+              value='0'
+              on:focus='{handleFocus}'
+              on:input='{handleInput}')
     span
-        input(value='{ hoursRemain.toFixed(1) }')
+        input(bind:this='{remainInput}'
+              class:selected='{fixedInput === remainInput}'
+              value='0'
+              on:focus='{handleFocus}'
+              on:input='{handleInput}')
     span
-        input(value='{ total.toFixed(1) }')
+        input(bind:this='{totalInput}'
+              class:selected='{fixedInput === totalInput}'
+              on:focus='{handleFocus}'
+              on:input='{handleInput}'
+              value=24)
 
 </template>
 
@@ -66,6 +125,10 @@ main
         text-transform: uppercase;
         font-size: 4em;
         font-weight: 100;
+    }
+
+    :global(.selected) {
+        font-weight: bold;
     }
 
     @media (min-width: 640px) {
