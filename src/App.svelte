@@ -2,6 +2,8 @@
     import { onMount } from 'svelte'
     import { Temporal } from 'proposal-temporal'
 
+    import * as birch from 'birch-outline'
+
     DECIMALS = 2
 
     laNowString = ''

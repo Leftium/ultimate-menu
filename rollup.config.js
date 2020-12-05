@@ -35,7 +35,10 @@ export default {
 		sourcemap: true,
 		format: 'iife',
 		name: 'app',
-		file: 'public/build/bundle.js'
+		file: 'public/build/bundle.js',
+		globals: {
+			'birch-outline': 'birchoutline'
+		}
 	},
 	plugins: [
 		svelte({
@@ -47,7 +50,11 @@ export default {
 				css.write('bundle.css');
 			},
 			preprocess: [
-				autoPreprocess({})
+                autoPreprocess({
+                    coffeescript: {
+                        bare: true
+                    }
+                })
 			]
 		}),
 
