@@ -1,8 +1,11 @@
 <script type='text/coffeescript'>
-    import { onMount } from 'svelte'
+    import { onMount, tick } from 'svelte'
+
     import { Temporal } from 'proposal-temporal'
 
     import * as birch from 'birch-outline'
+
+    import Select from 'svelte-select'
 
     config = '''
 Businesses:
@@ -41,6 +44,10 @@ Links:
     businesses     = []
     accounts       = []
     paymentMethods = []
+
+    selectItems = []
+    groupBy = (item) -> item.group
+    selectedValue = undefined
 
     EMPTY_ACCOUNT  =
         name: 'no accounts'
@@ -102,9 +109,16 @@ Links:
         if item.hasAttribute 'data-payment'
             lastPaymentMethod = upsertPaymentMethod(item.bodyContentString, lastPayerId)
 
+    for account in accounts
+        selectItems.push item =
+            value: account.id
+            label: account.name
+            group: account.business.name
+
     console.log businesses
     console.log accounts
     console.log paymentMethods
+    console.log selectItems
 
     currentBusinessAccounts = accounts.filter (account) ->
         account.business is currentBusiness
@@ -197,32 +211,6 @@ Links:
         v = parseFloat (@value or 0), 10
         updateValues e.srcElement
 
-    handleBusinessChange = (e) ->
-        newBusinessId = @.value
-
-        currentBusiness = businesses.find (b) -> b.id is newBusinessId
-
-        currentBusinessAccounts = accounts.filter (account) ->
-            account.business is currentBusiness
-        currentAccount = currentBusinessAccounts[0]
-
-        if currentBusinessAccounts.length is 0
-            currentAccount =
-                name: 'no accounts'
-                id: 0
-            currentBusinessAccounts.push = currentAccount
-
-
-
-    handleAccountChange = (e) ->
-        newAccountId = @.value
-
-        console.log newAccountId
-
-        currentAccount = accounts.find (a) -> a.id is newAccountId
-        console.log currentAccount
-        console.log accounts
-
     handleClickBusiness = (e) ->
         newBusinessId = @.getAttribute 'bid'
         currentBusiness = businesses.find (b) -> b.id is newBusinessId
@@ -255,6 +243,14 @@ Links:
         document.addEventListener 'copy', listener
         document.execCommand 'copy'
         document.removeEventListener 'copy', listener
+
+    handleSelect = (e) ->
+        newAccountId = e.detail.value
+        currentAccount = accounts.find (a) -> a.id is newAccountId
+        currentBusiness = businesses.find (b) -> b.id is currentAccount.business.id
+
+        await tick()  # important
+        selectedValue = undefined
 
 
 </script>
@@ -302,13 +298,15 @@ main
                          class='hidden-element hidden-menu-item'
                          class:selected='{account.id == currentAccount.id}'
                          on:click='{handleClickAccountId}') {account.id} (click to copy id)
-    span
-        select(bind:this='{currentBusiness}' on:change='{handleBusinessChange}')
-            +each('businesses as business')
-                option(value='{business.id}') {business.name}
-        select(bind:this='{currentAccount}' on:change='{handleAccountChange}')
-            +each('currentBusinessAccounts as account')
-                 option(value='{account.id}') {account.name}
+
+    div.themed-select
+        Select(bind:selectedValue
+               class='select'
+               placeholder='Search for account by name'
+               on:select='{handleSelect}'
+               items='{selectItems}'
+               groupBy='{groupBy}')
+
     hr
     div {currentBusiness.name}:{currentBusiness.id}
     div {currentAccount.name}:{currentAccount.id}
@@ -360,6 +358,10 @@ main
 
     .inline-block {
         display: inline-block;
+    }
+
+    .themed-select {
+        --listMaxHeight: 800px;
     }
 
     .business {
