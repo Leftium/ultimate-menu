@@ -13,5 +13,7 @@
 <svelte:component this={component} />
 
 <style>
-
+    :global(body) {
+        overflow-x: hidden;
+    }
 </style>

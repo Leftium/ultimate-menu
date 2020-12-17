@@ -256,6 +256,8 @@
 main
     div: a(href='configure') Configure
     h2 LA time: {laNowString}
+
+    div.label Linear Estimator
     div.inline-block(draggable='false')
         label { Math.round(percent) }%
         input(bind:this='{passedInput}'
@@ -279,7 +281,7 @@ main
               on:input='{handleInput}'
               value=24)
     hr
-
+    div.label Business/Account Selector (for links below)
 
     div
         +each('businesses as business')
@@ -306,6 +308,7 @@ main
                groupBy='{groupBy}')
 
     hr
+    div.label Links
     +each('links as link')
         +if('link.category')
             div.category {link.category}
@@ -323,6 +326,12 @@ main
         padding: 1.2em;
         max-width: 240px;
         margin: 0 auto;
+    }
+
+    .label {
+        font-weight: bold;
+        font-size: 110%;
+        color: gray;
     }
 
     h1 {
@@ -372,6 +381,7 @@ main
         margin-top: 10px;
         font-size: 120%;
         font-weight: bold;
+        color: darkcyan;
     }
 
 
