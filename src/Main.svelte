@@ -254,8 +254,11 @@
 
 <template lang=pug>
 main
-    div: a(href='configure') Configure
-    h2 LA time: {laNowString}
+    div.top
+        span: a(href='configure') Configure
+        span: a(target='_blank' href='mailto:john+ultimate.menu@leftium.com?subject=Ultimate+Menu+Feedback') Send Feedback
+
+    h3 LA time: {laNowString}
 
     div.label Linear Estimator
     div.inline-block(draggable='false')
@@ -321,9 +324,12 @@ main
 
 <style>
     main {
-        padding: 1.2em;
         max-width: 240px;
         margin: 0 auto;
+    }
+
+    .top span {
+        margin-right: 20px;
     }
 
     .label {
@@ -331,13 +337,6 @@ main
         font-size: 110%;
         color: white;
         background-color: gray;
-    }
-
-    h1 {
-        color: #ff3e00;
-        text-transform: uppercase;
-        font-size: 4em;
-        font-weight: 100;
     }
 
     .hidden-container .hidden-element {

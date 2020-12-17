@@ -15,5 +15,6 @@
 <style>
     :global(body) {
         overflow-x: hidden;
+        padding: 0 1.2em;
     }
 </style>
