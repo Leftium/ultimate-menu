@@ -14,6 +14,9 @@
 
     config = writable 'config', defaultConfig
 
+    if not $config.length
+        config.set defaultConfig
+
     outline = new birchoutline.Outline.createTaskPaperOutline($config)
     window.outline = outline
 
@@ -98,9 +101,13 @@
 
     for item in linkItems
         console.log item.bodyString
-        links.push link =
-            url: item.getAttribute 'data-url'
-            text: item.bodyContentString
+        if item.getAttribute('data-type') is 'project'
+            links.push link =
+                category: item.bodyContentString
+        else
+            links.push link =
+                url: item.getAttribute 'data-url'
+                text: item.bodyContentString
 
 
     currentBusinessIdPersist = writable 'currentBusinessId', 0
@@ -300,9 +307,12 @@ main
 
     hr
     +each('links as link')
-        div: FacebookBusinessLink(bid='{$currentBusinessIdPersist}'
-                                  aid='{$currentAccountIdPersist}'
-                                  href='{link.url}') {link.text}
+        +if('link.category')
+            div.category {link.category}
+            +else('')
+                div: FacebookBusinessLink(bid='{$currentBusinessIdPersist}'
+                                          aid='{$currentAccountIdPersist}'
+                                          href='{link.url}') {link.text}
 
 
 
@@ -356,6 +366,12 @@ main
     .account {
         cursor: default;
         padding-left: 20px;
+    }
+
+    .category {
+        margin-top: 10px;
+        font-size: 120%;
+        font-weight: bold;
     }
 
 
