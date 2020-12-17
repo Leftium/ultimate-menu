@@ -8,6 +8,8 @@
     import Select from 'svelte-select'
     import FacebookBusinessLink from './components/facebookbusinesslink.svelte'
 
+    import { writable, readable, derived } from 'svelte-persistent-store/dist/local';
+
     config = '''
 Businesses:
 	🔒 Leftium @business(335226930254766)
@@ -143,15 +145,38 @@ Links:
             text: item.bodyContentString
 
 
+    currentBusinessIdPersist = writable 'currentBusinessId', 0
+    currentAccountIdPersist = writable 'currentAccountId', 0
+
     console.log businesses
     console.log accounts
     console.log paymentMethods
     console.log selectItems
 
-    currentBusinessAccounts = accounts.filter (account) ->
-        account.business is currentBusiness
-    currentBusiness = businesses[0]
-    currentAccount = accounts[0] or EMPTY_ACCOUNT
+
+    currentBusiness = businesses.find (b) -> b.id is $currentBusinessIdPersist
+    currentBusiness = currentBusiness or businesses[0]
+
+    currentAccount = accounts.find (a) -> a.id is $currentAccountIdPersist
+    currentAccount = currentAccount or accounts[0] or EMPTY_ACCOUNT
+
+
+    ```
+    $: {
+        console.log('Persist currentBusiness:');
+        console.log(currentBusiness);
+        currentBusinessIdPersist.set(currentBusiness.id);
+    }
+    ```
+
+
+    ```
+    $: {
+        console.log('Persist currentAccount:');
+        console.log(currentAccount);
+        currentAccountIdPersist.set(currentAccount.id);
+    }
+    ```
 
     DECIMALS = 2
 
@@ -220,11 +245,11 @@ Links:
         updateTime()
         interval = setInterval updateTime, 1000
 
-        currentBusiness = businesses[0]
-        currentBusinessAccounts = accounts.filter (account) ->
-            account.business is currentBusiness
+        currentBusiness = businesses.find (b) -> b.id is $currentBusinessIdPersist
+        currentBusiness = currentBusiness or businesses[0]
 
-        currentAccount = accounts[0] or EMPTY_ACCOUNT
+        currentAccount = accounts.find (a) -> a.id is $currentAccountIdPersist
+        currentAccount = currentAccount or accounts[0] or EMPTY_ACCOUNT
 
         # Clean up when destroyed.
         () -> clearInterval interval
