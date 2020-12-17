@@ -110,8 +110,8 @@
                 text: item.bodyContentString
 
 
-    currentBusinessIdPersist = writable 'currentBusinessId', 0
-    currentAccountIdPersist = writable 'currentAccountId', 0
+    currentBusinessIdPersist = writable 'currentBusinessId', businesses[0].id
+    currentAccountIdPersist = writable 'currentAccountId', businesses[0].accounts[0].id
 
     console.log businesses
     console.log accounts
