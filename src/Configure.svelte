@@ -3,12 +3,25 @@
 
     config = writable 'config', ''
 
+    handleKeyDown = (e) ->
+        # https://stackoverflow.com/questions/6637341/use-tab-to-indent-in-textarea
+        if e.key is 'Tab'
+            e.preventDefault()
+            start = @selectionStart
+            end = @selectionEnd
+
+            # Set textarea value to: text before caret + tab + text after caret.
+            @value = @value.substring(0, start) + '    ' + @value.substring(end)
+
+            # Put caret at right position again.
+            @selectionStart = @selectionEnd = start + 4
+
 </script>
 
 
 <template lang=pug>
     div: a(href='/') Home
-    textarea(bind:value='{$config}' spellcheck='false')
+    textarea(bind:value='{$config}' on:keydown='{handleKeyDown}' spellcheck='false')
 </template>
 
 <style>
