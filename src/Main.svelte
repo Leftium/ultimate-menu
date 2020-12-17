@@ -8,9 +8,9 @@
     import Select from 'svelte-select'
     import FacebookBusinessLink from './components/facebookbusinesslink.svelte'
 
-    import { writable, readable, derived } from 'svelte-persistent-store/dist/local';
+    import { writable, readable, derived } from 'svelte-persistent-store/dist/local'
 
-    config = '''
+    defaultConfig = '''
 Businesses:
 	🔒 Leftium @business(335226930254766)
 		MC6135 @payment
@@ -56,7 +56,9 @@ Links:
 
 '''
 
-    outline = new birchoutline.Outline.createTaskPaperOutline(config)
+    config = writable 'config', defaultConfig
+
+    outline = new birchoutline.Outline.createTaskPaperOutline($config)
     window.outline = outline
 
     businesses     = []
