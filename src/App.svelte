@@ -6,6 +6,7 @@
     import * as birch from 'birch-outline'
 
     import Select from 'svelte-select'
+    import FacebookBusinessLink from './components/facebookbusinesslink.svelte'
 
     config = '''
 Businesses:
@@ -31,11 +32,26 @@ Businesses:
 	🔒 John Murphy 2 @business(148595963673002)
 
 Links:
-	Businesses @url(https://business.facebook.com/select)
+	Select Business @url(https://business.facebook.com/select)
+	Create Business @url(https://business.facebook.com/create)
 	Ad Manager @url(https://business.facebook.com/adsmanager/manage/campaigns?act=:AID&business_id=:BID)
+	Account Overview @url(https://business.facebook.com/adsmanager/manage/accounts?act=:AID&business_id=:BID)
+
+	Business Info @url(https://business.facebook.com/settings/info?business_id=:BID)
+	Business Verification Inbox @url(https://business.facebook.com/settings/support_inbox?business_id=:BID&global_scope_id=:BID)
+
+	Account Quality @url(https://business.facebook.com/accountquality/:BID/:AID/)
 	FB Blueprint @url(https://www.facebookblueprint.com/)
 	Workplace @url(https://ultimatefreedom667.workplace.com/)
 	Inner Circle @url(https://innercircle.ultimatefreedom.com/)
+
+	Payment Settings @url(https://business.facebook.com/ads/manager/account_settings/account_billing/?act=:AID&pid=p1&business_id=:BID&page=account_settings&tab=account_billing_settings)
+	Invoices @url(https://business.facebook.com/ads/manager/billing/transactions/?act=:AID&pid=p1&business_id=:BID&global_scope_id=:BID&page=billing&tab=transactions)
+
+	FB Ads Status @url(https://status.fb.com/ads)
+
+	World Time Buddy (EST CST PST) @url(http://www.worldtimebuddy.com/?lid=1835848,5128581,5037649,5391959&h=1835848)
+
 '''
 
     outline = new birchoutline.Outline.createTaskPaperOutline(config)
@@ -48,6 +64,8 @@ Links:
     selectItems = []
     groupBy = (item) -> item.group
     selectedValue = undefined
+
+    links = []
 
     EMPTY_ACCOUNT  =
         name: 'no accounts'
@@ -92,8 +110,11 @@ Links:
         if item.getAttribute('data-type') is 'project' and item.bodyString.match /^Businesses:/
             businessItems = item.descendants
 
+        if item.getAttribute('data-type') is 'project' and item.bodyString.match /^Links:/
+            linkItems = item.descendants
 
     console.log businessItems
+    console.log linkItems
 
     for item in businessItems
         console.log item.bodyString
@@ -114,6 +135,13 @@ Links:
             value: account.id
             label: account.name
             group: account.business.name
+
+    for item in linkItems
+        console.log item.bodyString
+        links.push link =
+            url: item.getAttribute 'data-url'
+            text: item.bodyContentString
+
 
     console.log businesses
     console.log accounts
@@ -308,18 +336,11 @@ main
                groupBy='{groupBy}')
 
     hr
-    div: a(target='_blank' href='https://ultimatefreedom667.workplace.com/') Workplace
-    div: a(target='_blank' href='https://business.facebook.com/adsmanager/manage/campaigns?act={currentAccount.id}&business_id={currentBusiness.id}') Ads Manager
-    div: a(target='_blank' href='https://business.facebook.com/settings/info?business_id={currentBusiness.id}') Business Info
-    div: a(target='_blank' href='https://business.facebook.com/settings/support_inbox?business_id={currentBusiness.id}&global_scope_id={currentBusiness.id}') Business Verification Inbox
-    div: a(target='_blank' href='https://business.facebook.com/accountquality/{currentBusiness.id}/{currentAccount.id}/') Account Quality
-    div: a(target='_blank' href='https://business.facebook.com/ads/manager/account_settings/account_billing/?act={currentAccount.id}&pid=p1&business_id={currentBusiness.id}&page=account_settings&tab=account_billing_settings') Payment Settings
-    div: a(target='_blank' href='https://business.facebook.com/ads/manager/billing/transactions/?act={currentAccount.id}&pid=p1&business_id={currentBusiness.id}&global_scope_id={currentBusiness.id}&page=billing&tab=transactions') Invoices
-    div: a(target='_blank' href='https://business.facebook.com/adsmanager/manage/accounts?act={currentAccount.id}&business_id={currentBusiness.id}') Account Overview
-    div: a(target='_blank' href='https://status.fb.com/ads') FB Ads Status
-    div: a(target='_blank' href='https://business.facebook.com/select') Select Business
-    div: a(target='_blank' href='https://business.facebook.com/create') Create Business
-    div: a(target='_blank' href='http://www.worldtimebuddy.com/?lid=1835848,5128581,5037649,5391959&h=1835848') World Time Buddy (EST CST PST)
+    +each('links as link')
+        div: FacebookBusinessLink(bid='{currentBusiness.id}'
+                                  aid='{currentAccount.id}'
+                                  href='{link.url}') {link.text}
+
 
 
 </template>
