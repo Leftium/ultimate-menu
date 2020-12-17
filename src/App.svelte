@@ -153,31 +153,6 @@ Links:
     console.log paymentMethods
     console.log selectItems
 
-
-    currentBusiness = businesses.find (b) -> b.id is $currentBusinessIdPersist
-    currentBusiness = currentBusiness or businesses[0]
-
-    currentAccount = accounts.find (a) -> a.id is $currentAccountIdPersist
-    currentAccount = currentAccount or accounts[0] or EMPTY_ACCOUNT
-
-
-    ```
-    $: {
-        console.log('Persist currentBusiness:');
-        console.log(currentBusiness);
-        currentBusinessIdPersist.set(currentBusiness.id);
-    }
-    ```
-
-
-    ```
-    $: {
-        console.log('Persist currentAccount:');
-        console.log(currentAccount);
-        currentAccountIdPersist.set(currentAccount.id);
-    }
-    ```
-
     DECIMALS = 2
 
     laNowString = ''
@@ -245,12 +220,6 @@ Links:
         updateTime()
         interval = setInterval updateTime, 1000
 
-        currentBusiness = businesses.find (b) -> b.id is $currentBusinessIdPersist
-        currentBusiness = currentBusiness or businesses[0]
-
-        currentAccount = accounts.find (a) -> a.id is $currentAccountIdPersist
-        currentAccount = currentAccount or accounts[0] or EMPTY_ACCOUNT
-
         # Clean up when destroyed.
         () -> clearInterval interval
 
@@ -266,8 +235,9 @@ Links:
 
     handleClickBusiness = (e) ->
         newBusinessId = @.getAttribute 'bid'
+        currentBusinessIdPersist.set newBusinessId
         currentBusiness = businesses.find (b) -> b.id is newBusinessId
-        currentAccount = currentBusiness.accounts[0] or EMPTY_ACCOUNT
+        currentAccountIdPersist.set(currentBusiness.accounts[0]?.id or 0)
 
     handleClickBusinessId = (e) ->
         businessId = @.getAttribute 'bid'
@@ -283,7 +253,10 @@ Links:
     handleClickAccount = (e) ->
         newAccountId = @.getAttribute 'aid'
         currentAccount = accounts.find (a) -> a.id is newAccountId
+        currentAccountIdPersist.set(newAccountId)
+
         currentBusiness = businesses.find (b) -> b.id is currentAccount.business.id
+        currentBusinessIdPersist.set currentBusiness.id
 
 
     handleClickAccountId = (e) ->
@@ -301,6 +274,9 @@ Links:
         newAccountId = e.detail.value
         currentAccount = accounts.find (a) -> a.id is newAccountId
         currentBusiness = businesses.find (b) -> b.id is currentAccount.business.id
+
+        currentAccountIdPersist.set newAccountId
+        currentBusinessIdPersist.set currentBusiness.id
 
         await tick()  # important
         selectedValue = undefined
@@ -339,17 +315,17 @@ main
     div
         +each('businesses as business')
             div.hidden-container
-                span(bid='{business.id}' class='business' class:selected='{business.id == currentBusiness.id}' on:click='{handleClickBusiness}') {business.name}
-                span(bid='{business.id}' class='hidden-element hidden-menu-item' class:selected='{business.id == currentBusiness.id}' on:click='{handleClickBusinessId}') {business.id} (click to copy id)
+                span(bid='{business.id}' class='business' class:selected='{business.id == $currentBusinessIdPersist}' on:click='{handleClickBusiness}') {business.name}
+                span(bid='{business.id}' class='hidden-element hidden-menu-item' class:selected='{business.id == $currentBusinessIdPersist}' on:click='{handleClickBusinessId}') {business.id} (click to copy id)
             +each('business.accounts as account')
                 div.hidden-container
                     span(aid='{account.id}'
                          class='account'
-                         class:selected='{account.id == currentAccount.id}'
+                         class:selected='{account.id == $currentAccountIdPersist}'
                          on:click='{handleClickAccount}') {account.name}
                     span(aid='{account.id}'
                          class='hidden-element hidden-menu-item'
-                         class:selected='{account.id == currentAccount.id}'
+                         class:selected='{account.id == $currentAccountIdPersist}'
                          on:click='{handleClickAccountId}') {account.id} (click to copy id)
 
     div.themed-select
@@ -362,8 +338,8 @@ main
 
     hr
     +each('links as link')
-        div: FacebookBusinessLink(bid='{currentBusiness.id}'
-                                  aid='{currentAccount.id}'
+        div: FacebookBusinessLink(bid='{$currentBusinessIdPersist}'
+                                  aid='{$currentAccountIdPersist}'
                                   href='{link.url}') {link.text}
 
 
