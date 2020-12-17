@@ -9,13 +9,13 @@
 
     config = '''
 Businesses:
-	Leftium @business(335226930254766)
+	🔒 Leftium @business(335226930254766)
 		MC6135 @payment
 
 		Ad Account 01 @account(626486004739350)
 			 MC6135 @payment
 
-	Amazing Health Science @business(3992912430736092)
+	🔒 Amazing Health Science @business(3992912430736092)
 		MC4750 @payment
 		VISA1111 @payment
 
@@ -28,7 +28,7 @@ Businesses:
 	John Murphy 1 @business(413115236387462)
 		JM01 @account(365373097889567)
 
-	John Murphy 2 @business(148595963673002)
+	🔒 John Murphy 2 @business(148595963673002)
 
 Links:
 	Businesses @url(https://business.facebook.com/select)
@@ -308,8 +308,6 @@ main
                groupBy='{groupBy}')
 
     hr
-    div {currentBusiness.name}:{currentBusiness.id}
-    div {currentAccount.name}:{currentAccount.id}
     div: a(target='_blank' href='https://ultimatefreedom667.workplace.com/') Workplace
     div: a(target='_blank' href='https://business.facebook.com/adsmanager/manage/campaigns?act={currentAccount.id}&business_id={currentBusiness.id}') Ads Manager
     div: a(target='_blank' href='https://business.facebook.com/settings/info?business_id={currentBusiness.id}') Business Info
@@ -321,6 +319,8 @@ main
     div: a(target='_blank' href='https://status.fb.com/ads') FB Ads Status
     div: a(target='_blank' href='https://business.facebook.com/select') Select Business
     div: a(target='_blank' href='https://business.facebook.com/create') Create Business
+    div: a(target='_blank' href='http://www.worldtimebuddy.com/?lid=1835848,5128581,5037649,5391959&h=1835848') World Time Buddy (EST CST PST)
+
 
 </template>
 
