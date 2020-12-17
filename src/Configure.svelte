@@ -8,7 +8,7 @@
 
 <template lang=pug>
     div: a(href='/') Home
-    textarea(bind:value='{$config}')
+    textarea(bind:value='{$config}' spellcheck='false')
 </template>
 
 <style>
@@ -17,6 +17,7 @@
         height: 800px;
         white-space: nowrap;
         overflow: auto;
+        font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
     }
 
 </style>
