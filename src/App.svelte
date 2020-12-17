@@ -166,6 +166,9 @@ Links:
     totalInput  = null
     fixedInput  = null
 
+    groupNumbers = (s) ->
+        s.replace(/..../g, '$& ').trim()
+
 
     updateValues = (lastInput) ->
         switch lastInput
@@ -316,7 +319,7 @@ main
         +each('businesses as business')
             div.hidden-container
                 span(bid='{business.id}' class='business' class:selected='{business.id == $currentBusinessIdPersist}' on:click='{handleClickBusiness}') {business.name}
-                span(bid='{business.id}' class='hidden-element hidden-menu-item' class:selected='{business.id == $currentBusinessIdPersist}' on:click='{handleClickBusinessId}') {business.id} (click to copy id)
+                span(bid='{business.id}' class='hidden-element hidden-menu-item' class:selected='{business.id == $currentBusinessIdPersist}' on:click='{handleClickBusinessId}') {groupNumbers(business.id)} (click to copy id)
             +each('business.accounts as account')
                 div.hidden-container
                     span(aid='{account.id}'
@@ -326,7 +329,7 @@ main
                     span(aid='{account.id}'
                          class='hidden-element hidden-menu-item'
                          class:selected='{account.id == $currentAccountIdPersist}'
-                         on:click='{handleClickAccountId}') {account.id} (click to copy id)
+                         on:click='{handleClickAccountId}') {groupNumbers(account.id)} (click to copy id)
 
     div.themed-select
         Select(bind:selectedValue
