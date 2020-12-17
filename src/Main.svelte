@@ -6,7 +6,7 @@
     import * as birch from 'birch-outline'
 
     import Select from 'svelte-select'
-    import FacebookBusinessLink from './components/facebookbusinesslink.svelte'
+    import FacebookBusinessLink from './components/FacebookBusinessLink.svelte'
 
     import { writable, readable, derived } from 'svelte-persistent-store/dist/local'
 
@@ -280,7 +280,6 @@ main
               on:focus='{handleFocus}'
               on:input='{handleInput}'
               value=24)
-    hr
     div.label Business/Account Selector (for links below)
 
     div
@@ -307,7 +306,6 @@ main
                items='{selectItems}'
                groupBy='{groupBy}')
 
-    hr
     div.label Links
     +each('links as link')
         +if('link.category')
@@ -331,7 +329,8 @@ main
     .label {
         font-weight: bold;
         font-size: 110%;
-        color: gray;
+        color: white;
+        background-color: gray;
     }
 
     h1 {
